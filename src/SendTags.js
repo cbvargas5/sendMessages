@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 
 export default function SendTags () {
     const [recipients, updateRecipients] = useState("")
@@ -37,15 +37,15 @@ export default function SendTags () {
                 <label style={{paddingRight: "10px"}}>
                     <div>
                         <span style={{paddingRight: "10px"}}>Send Type (Organization, First Name, Last Name, or Tags):</span>
-                        <input type="text" name="sendType" onChange={handleChange}/>
+                        <input type="text" name="sendType" required onChange={handleChange}/>
                     </div>
                     <div>
                         <span style={{paddingRight: "10px", paddingTop: "20px"}}>Send To (separated by commas):</span>
-                        <input type="text" name="sendTo" onChange={handleChange}/>
+                        <input type="text" name="sendTo" required onChange={handleChange}/>
                     </div>
                     <div>
                         <span style={{paddingRight: "10px", paddingTop: "20px"}}>AND/OR?: </span>
-                        <input type="text" name="qualifier" onChange={handleChange}/>
+                        <input type="text" name="qualifier" required onChange={handleChange}/>
                     </div>
                 </label>
                 <input type="submit" value="Send Messages" />
