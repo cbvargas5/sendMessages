@@ -6,9 +6,10 @@ export default function SendTags () {
     const [sendTo, updateSendTo] = useState("")
     const [sendType, updateSendType] = useState("")
     const [sent, updateSent] = useState(false)
+    const [failed, updateFailed] = useState(false)
 
     const handleChange = (event) => {
-        const value = event.target.value
+        const value = (event.target.value).toLowerCase().trim()
         switch(event.target.name) {
             case "sendType":
                 updateSendType(value)
@@ -25,24 +26,21 @@ export default function SendTags () {
     }
 
     const convertSendType = (sendTypeToConvert) => {
-      let convertedSendType = sendTypeToConvert.toLowerCase().trim()
-
       const allowedUserSendTypes = {
         allowedFirstName: ['first', 'first name', 'firstname'],
         allowedLastName: ['last', 'last name', 'lastname'],
         allowedOrganization: ['org', 'organization', 'orgid', 'organizationid'],
         allowedTags: ['tags', 'tag'],
       }
-      if (allowedUserSendTypes.allowedFirstName.includes(convertedSendType)) return 'firstName'
-      if (allowedUserSendTypes.allowedLastName.includes(convertedSendType)) return 'lastName'
-      if (allowedUserSendTypes.allowedOrganization.includes(convertedSendType)) return 'organizationId'
-      if (allowedUserSendTypes.allowedTags.includes(convertedSendType)) return 'tags'
+      if (allowedUserSendTypes.allowedFirstName.includes(sendTypeToConvert)) return 'firstName'
+      if (allowedUserSendTypes.allowedLastName.includes(sendTypeToConvert)) return 'lastName'
+      if (allowedUserSendTypes.allowedOrganization.includes(sendTypeToConvert)) return 'organizationId'
+      if (allowedUserSendTypes.allowedTags.includes(sendTypeToConvert)) return 'tags'
       return sendTypeToConvert
     }
 
     const convertQualifier = (qualifierToConvert) => {
-      let convertedQualifier = qualifierToConvert.toLowerCase().trim()
-      switch(convertedQualifier) {
+      switch(qualifierToConvert) {
         case "and":
           return ''
         case "or":
@@ -52,7 +50,7 @@ export default function SendTags () {
       }
     }
     const createQueryString = (providedSendTo, providedSendType, providedQualifier) => {
-      let convertedSendToArray = providedSendTo.toLowerCase().trim().split(',')
+      let convertedSendToArray = providedSendTo.split(',')
 
       if (convertedSendToArray.length === 1) {
         return `search?${providedSendType}=*${convertedSendToArray.join('')}*`
