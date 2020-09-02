@@ -40,28 +40,32 @@ export default function SendTags () {
       return sendTypeToConvert
     }
 
-    const createQueryString = (sendToToConvert, providedSendType) => {
-      let convertedSendToArray = sendToToConvert.toLowerCase().trim().split(',')
+    const convertQualifier = (qualifierToConvert) => {
+      let convertedQualifier = qualifierToConvert.toLowerCase().trim()
+      switch(convertedQualifier) {
+        case "and":
+          return ''
+        case "or":
+          return '_or'
+        default:
+          return;
+      }
+    }
+    const createQueryString = (providedSendTo, providedSendType, providedQualifier) => {
+      let convertedSendToArray = providedSendTo.toLowerCase().trim().split(',')
 
       if (convertedSendToArray.length === 1) {
-        return `${providedSendType}=*${convertedSendToArray.join('')}*`
+        return `search?${providedSendType}=*${convertedSendToArray.join('')}*`
       } else {
-        return convertedSendToArray.map((currentSendTo) => `${providedSendType}[]=*${currentSendTo}*&`).join('')
+        return `search${providedQualifier}?${convertedSendToArray.map((currentSendTo) => `${providedSendType}[]=*${currentSendTo}*&`).join('')}`
       }
       
     }
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        /**
-         * [x] SendType: Needs to have input parsed for available keys
-         * [] SendTo: trim whitespace, create an array with inputs seperated with commas
-         * [] qualifier: lowercase input and trim whitespace
-         */
         
-      console.log('query:', createQueryString(sendTo, convertSendType(sendType)))
-        
-        fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/search_or?${createQueryString(sendTo, convertSendType(sendType))}`)
+        fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/${createQueryString(sendTo, convertSendType(sendType), convertQualifier(qualifier))}`)
           .then(response => response.json())
           .then(data => {
             console.log('response data:', data)
