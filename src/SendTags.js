@@ -6,20 +6,22 @@ export default function SendTags () {
     const [sendTo, updateSendTo] = useState("")
     const [sendType, updateSendType] = useState("")
     const [sent, updateSent] = useState(false)
-    const [failed, updateFailed] = useState(false)
+    const [invalid, updateInvalid] = useState(false)
+    const [found, updateFound] = useState(false)
 
     const handleChange = (event) => {
         const value = (event.target.value).toLowerCase().trim()
         switch(event.target.name) {
             case "sendType":
-                updateSendType(value)
-                return
+              updateSendType(value)
+              return
             case "sendTo":
-                updateSendTo(value)
-                return
+              updateSendTo(value)
+              return
             case "qualifier":
-                updateQualifier(value)
-                return
+              // updateinvalid(false)
+              // qualifier !== 'and' || 'or' ? updateinvalid(true) : updateQualifier(value)
+              updateQualifier(value)
             default:
                 return;
         }
@@ -67,13 +69,24 @@ export default function SendTags () {
     }
     const handleSubmit = (event) => {
         event.preventDefault()
-        fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/${createQueryString(sendTo, convertSendType(sendType), convertQualifier(qualifier))}`)
-          .then(response => response.json())
-          .then(data => {
-            updateSent(true)
-            updateRecipients(convertRecipientsToUserReadable(data))
-          })
-          .catch(err => console.error(err))
+        updateSent(false)
+        updateFound(false)
+        if (!invalid) {
+          fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/${createQueryString(sendTo, convertSendType(sendType), convertQualifier(qualifier))}`)
+            .then(response => response.json())
+            .then(data => {
+              if(data.length < 1) {
+                updateRecipients('User(s) not found')
+              } else {
+                updateFound(true)
+                updateSent(true)
+                updateRecipients(convertRecipientsToUserReadable(data))
+              }
+            })
+            .catch(err => console.error(err))
+        } else {
+          alert('Please provide valid inputs')
+        }
     }
 
     return (
@@ -95,7 +108,9 @@ export default function SendTags () {
                 </label>
                 <input type="submit" value="Send Messages" />
             </form>
-            { sent && <div>Sent to: {recipients}</div> }
+            { sent && found && <div>Sent to: {recipients}</div> }
+            { !found && <div>{recipients}</div> }
+            { invalid && <div>Invalid Input</div>}
         </div>
     )
 }
