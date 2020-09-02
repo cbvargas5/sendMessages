@@ -25,10 +25,12 @@ export default function SendTags () {
     }
 
     const handleSubmit = (event) => {
-        event.preventDefault()
-        /*  implement me
-            hint: we will probably need to update state here to render the right parts
-        */
+       event.preventDefault()
+       
+       fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/search?${sendType}=*${sendTo}*`)
+        .then(response => response.json())
+        .then(data => console.log('response data:', data))
+        .catch(err => console.error(err))
     }
 
     return (
