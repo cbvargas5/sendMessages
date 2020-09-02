@@ -62,13 +62,18 @@ export default function SendTags () {
       
     }
 
+    const convertRecipientsToUserReadable = (recipientsArrayOfObjects) => {
+      const recipientsArray = []
+      recipientsArrayOfObjects.forEach(({ firstName, lastName }) => recipientsArray.push(firstName + ' ' + lastName))
+      return recipientsArray.join(', ')
+    }
     const handleSubmit = (event) => {
         event.preventDefault()
-        
         fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/${createQueryString(sendTo, convertSendType(sendType), convertQualifier(qualifier))}`)
           .then(response => response.json())
           .then(data => {
-            console.log('response data:', data)
+            updateSent(true)
+            updateRecipients(convertRecipientsToUserReadable(data))
           })
           .catch(err => console.error(err))
     }
