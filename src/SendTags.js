@@ -40,15 +40,28 @@ export default function SendTags () {
       return sendTypeToConvert
     }
 
+    const createQueryString = (sendToToConvert, providedSendType) => {
+      let convertedSendToArray = sendToToConvert.toLowerCase().trim().split(',')
+
+      if (convertedSendToArray.length === 1) {
+        return `${providedSendType}=*${convertedSendToArray.join('')}*`
+      } else {
+        return convertedSendToArray.map((currentSendTo) => `${providedSendType}[]=*${currentSendTo}*&`).join('')
+      }
+      
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault()
         /**
-         * SendType: Needs to have input parsed for available keys
-         * SendTo: trim whitespace, create an array with inputs seperated with commas
-         * qualifier: lowercase input and trim whitespace
+         * [x] SendType: Needs to have input parsed for available keys
+         * [] SendTo: trim whitespace, create an array with inputs seperated with commas
+         * [] qualifier: lowercase input and trim whitespace
          */
-
-        fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/search?${convertSendType(sendType)}=*${sendTo}*`)
+        
+      console.log('query:', createQueryString(sendTo, convertSendType(sendType)))
+        
+        fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/search_or?${createQueryString(sendTo, convertSendType(sendType))}`)
           .then(response => response.json())
           .then(data => {
             console.log('response data:', data)
