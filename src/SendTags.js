@@ -24,13 +24,36 @@ export default function SendTags () {
         }
     }
 
+    const convertSendType = (sendTypeToConvert) => {
+      let convertedSendType = sendTypeToConvert.toLowerCase().trim()
+
+      const allowedUserSendTypes = {
+        allowedFirstName: ['first', 'first name', 'firstname'],
+        allowedLastName: ['last', 'last name', 'lastname'],
+        allowedOrganization: ['org', 'organization', 'orgid', 'organizationid'],
+        allowedTags: ['tags', 'tag'],
+      }
+      if (allowedUserSendTypes.allowedFirstName.includes(convertedSendType)) return 'firstName'
+      if (allowedUserSendTypes.allowedLastName.includes(convertedSendType)) return 'lastName'
+      if (allowedUserSendTypes.allowedOrganization.includes(convertedSendType)) return 'organizationId'
+      if (allowedUserSendTypes.allowedTags.includes(convertedSendType)) return 'tags'
+      return sendTypeToConvert
+    }
+
     const handleSubmit = (event) => {
-       event.preventDefault()
-       
-       fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/search?${sendType}=*${sendTo}*`)
-        .then(response => response.json())
-        .then(data => console.log('response data:', data))
-        .catch(err => console.error(err))
+        event.preventDefault()
+        /**
+         * SendType: Needs to have input parsed for available keys
+         * SendTo: trim whitespace, create an array with inputs seperated with commas
+         * qualifier: lowercase input and trim whitespace
+         */
+
+        fetch(`https://sheetdb.io/api/v1/aka2sv6jd00dh/search?${convertSendType(sendType)}=*${sendTo}*`)
+          .then(response => response.json())
+          .then(data => {
+            console.log('response data:', data)
+          })
+          .catch(err => console.error(err))
     }
 
     return (
